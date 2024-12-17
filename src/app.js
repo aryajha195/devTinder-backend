@@ -1,12 +1,16 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
+const cookieParser = require('cookie-parser');
+const jwt = require('jsonwebtoken');
 const { connectDatabase } = require('./config/database');
 const User = require('./models/user');
 const { validateSignUp, validateLoginCredentials } = require("./utils/helper");
+const authUser = require("./middlewares/userAuth");
 
 const app = express();
 
 app.use(express.json())
+app.use(cookieParser())
 
 //get all users
 app.get("/feed", async (req, res) => {
@@ -148,13 +152,31 @@ app.post("/login", async(req, res) => {
             throw new Error('Invalid Credentials.')
         }
         else{
+            //create jwt token
+            const token = jwt.sign({_id: user._id}, "dev@Tinder790", { expiresIn: '7d' })
+            console.log(token)
+            res.cookie("token", token)
+
             res.send('Login Successful')
         }
     }
     catch(error) {
+        res.clearCookie("token")
         res.status(400).send("Error: "+error)
     }
 
+    
+})
+
+
+//get profile
+app.get("/profile", authUser, (req, res) => {
+    try {
+        res.send(req.user)
+    }
+    catch(error) {
+        res.status(400).send("Error: "+error.message)
+    }
     
 })
 
