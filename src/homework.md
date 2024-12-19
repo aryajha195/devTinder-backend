@@ -67,3 +67,28 @@ Ep-23
 6. Write userAuth Middleware
 7. Add userAuth Middleware in profile API and a new sendConnectionRequest API
 8. Set the expiry of JWT token and cookies to 7 days
+9. Create userSchema methods to getJWT()
+10. Create userSchema method to comparePassword(passwordInputByUser)
+
+Ep-24
+1. Explore tinder APIs
+2. Create a list all API you can think of in Dev Tinder
+3. Group multiple routes under respective routers
+4. Read documentation for express.Router
+5. Create routes folder for managing auth, profile, request routers
+6. Create authRouter, profileRouter, requestRouter
+7. Import these routers in app.js 
+8. Create POST /logout API
+9. Create PATCH /profile/edit
+10. Create PATCH /profile/password
+11. Validation in all POST / PATCH API
+
+Ep-25
+1. Create Connection Request Schema
+2. Send connection Request API
+3. Proper Validation of Data
+4. Think about all corner cases 
+5. $or and $and query in mongodb
+6. Indexes, Why do we need it, Advantages and disadvantages
+7. Read about compound indexes
+8. schema pre function

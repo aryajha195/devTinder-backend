@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt')
 
 const userSchema = new mongoose.Schema({
     firstName: {
@@ -31,10 +33,6 @@ const userSchema = new mongoose.Schema({
                 throw new Error('Weak Password')
         }
     },
-    age: {
-        type: Number,
-        min: 15
-    },
     gender: {
         type: String,
         validate: (value)=>{
@@ -54,6 +52,15 @@ const userSchema = new mongoose.Schema({
 },
 { timestamps: true }
 );
+
+userSchema.methods.generateToken = function() {
+    return jwt.sign({_id: this._id}, "dev@Tinder790", { expiresIn: '7d' })
+}
+
+userSchema.methods.comparePassword = async function(passwordFromInput) {
+    return await bcrypt.compare(passwordFromInput, this.password);
+}
+
 
 const User = mongoose.model("User", userSchema);
 

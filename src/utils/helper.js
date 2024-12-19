@@ -25,4 +25,5 @@ function validateLoginCredentials(emailId, password) {
     }
 }
 
+
 module.exports = { validateSignUp, validateLoginCredentials };

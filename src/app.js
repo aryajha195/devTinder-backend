@@ -6,11 +6,21 @@ const { connectDatabase } = require('./config/database');
 const User = require('./models/user');
 const { validateSignUp, validateLoginCredentials } = require("./utils/helper");
 const authUser = require("./middlewares/userAuth");
+const authRouter = require("./routes/auth");
+const profileRouter = require("./routes/profile");
+const requestRouter = require("./routes/requests");
+const userRouter = require("./routes/user");
 
 const app = express();
 
 app.use(express.json())
 app.use(cookieParser())
+
+app.use("/profile", profileRouter);
+app.use("/requests", requestRouter);
+app.use("/user", userRouter)
+app.use("/", authRouter);
+
 
 //get all users
 app.get("/feed", async (req, res) => {
@@ -75,110 +85,6 @@ app.delete("/user", async(req, res) => {
     }
 })
 
-//add user to db
-app.post("/signup", async (req, res) => {
-    try {
-
-        validateSignUp(req.body);
-
-        const { firstName, lastName, emailId, password, skills, photoUrl, gender } = req.body;
-
-        const passwordHash = await bcrypt.hash(password, 10);
-
-        const user = new User({
-            firstName,
-            lastName,
-            emailId,
-            skills,
-            photoUrl,
-            gender,
-            password: passwordHash
-        })
-
-        await user.save();
-        res.send('User Added Successfully.')
-    }
-    catch(err) {
-        res.status(500).send('Error: '+err)
-    }
-    
-})
-
-//update user
-app.patch("/user", async(req, res) => {
-    const userId = req.params.id;
-    const data = req.body;
-
-    try {
-        const updatedKeys = ['password', 'age', 'gender', 'photoUrl'];
-        console.log(Object.keys(data))
-        const isValidUpdation =  Object.keys(data).every((val) => 
-            updatedKeys.includes(val)
-        )
-
-        console.log(isValidUpdation)
-
-        if(isValidUpdation) {
-            throw new Error('Invalid update')
-        }
-        const user = await User.findByIdAndUpdate(userId, data, {
-            returnDocument: 'after',
-            runValidators: true
-        })
-        if(user) {
-            console.log(user)
-            res.send('User updated successfully.')
-        }
-        else{
-            res.send('User not found.')
-        }
-    }
-    catch(error) {
-        res.status(400).send('Error: '+error)
-    }
-})
-
-//login user
-app.post("/login", async(req, res) => {
-    const { emailId, password } = req.body;
-    try {
-        validateLoginCredentials(emailId, password);
-        const user = await User.findOne({emailId: emailId});
-        if(!user) {
-            throw new Error('Invalid Credentials.')
-        }
-        const isValidCredentials = await bcrypt.compare(password, user.password);
-        if(!isValidCredentials) {
-            throw new Error('Invalid Credentials.')
-        }
-        else{
-            //create jwt token
-            const token = jwt.sign({_id: user._id}, "dev@Tinder790", { expiresIn: '7d' })
-            console.log(token)
-            res.cookie("token", token)
-
-            res.send('Login Successful')
-        }
-    }
-    catch(error) {
-        res.clearCookie("token")
-        res.status(400).send("Error: "+error)
-    }
-
-    
-})
-
-
-//get profile
-app.get("/profile", authUser, (req, res) => {
-    try {
-        res.send(req.user)
-    }
-    catch(error) {
-        res.status(400).send("Error: "+error.message)
-    }
-    
-})
 
 connectDatabase()
     .then(() => {
