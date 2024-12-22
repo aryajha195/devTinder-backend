@@ -91,4 +91,16 @@ Ep-25
 5. $or and $and query in mongodb
 6. Indexes, Why do we need it, Advantages and disadvantages
 7. Read about compound indexes
-8. schema pre function
+8. schema pre ("save") function
+9. ALWAYS THINK ABOUT CORNER CASES
+
+Ep-26
+1. Write code with proper validations for POST /reques/review/:status/:requestId
+2. Throught process - POST vs GET
+3. Read about ref and populate https://mongoose.com/docs/populatr.html
+4. Create GET /user/requests/received with all the checks
+5. Create GET /user/connections
+
+6. Logic for GET /feed API
+7. Explore the $nin, $and , $ne and other query operators 
+8. Add pagination logic
