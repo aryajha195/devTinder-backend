@@ -40,7 +40,7 @@ userRouter.get("/connections", authUser, async(req, res) => {
 
         const data = connections.map(obj => {
             if(obj.fromUserId._id.toString() === loggedUser._id.toString())
-                return toUserId;
+                return obj.toUserId;
             return obj.fromUserId;
         })
 
