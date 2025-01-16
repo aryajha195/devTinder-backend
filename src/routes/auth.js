@@ -30,7 +30,7 @@ authRouter.post("/login", async(req, res) => {
         const token = await user.generateToken()
         res.cookie("token", token)
         
-        res.send('Login Successful')
+        res.send(user)
     }
     catch(error) {
         res.clearCookie("token")
@@ -74,8 +74,13 @@ authRouter.post("/signup", async (req, res) => {
 
 //logout user
 authRouter.post("/logout", (req, res) => {
+    try{
     res.clearCookie("token")
     res.send("Logged out successfuly")
+    }
+    catch(err) {
+        res.status(400).send("Error: "+err.message)
+    }
 })
 
 module.exports = authRouter;

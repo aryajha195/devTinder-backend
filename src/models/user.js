@@ -33,6 +33,17 @@ const userSchema = new mongoose.Schema({
                 throw new Error('Weak Password')
         }
     },
+    age: {
+        type: Number,
+        validate: (value) => {
+            if(value <= 10 && value >= 100) {
+                throw new Error('Age must be a number.')
+            }
+        }
+    },
+    about: {
+        type: String,
+    },
     gender: {
         type: String,
         validate: (value)=>{
@@ -47,7 +58,7 @@ const userSchema = new mongoose.Schema({
     },
     photoUrl: {
         type: String,
-        default: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.pngegg.com%2Fen%2Fsearch%3Fq%3Duser&psig=AOvVaw3XKSz8ke5YvSlOYpy_QJQK&ust=1734364080982000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCLiDyu-PqooDFQAAAAAdAAAAABAE"
+        default: "https://geographyandyou.com/images/user-profile.png"
     }
 },
 { timestamps: true }

@@ -21,13 +21,11 @@ requestRouter.post("/send/:status/:toUserId", authUser, async (req, res) => {
             throw new Error("Requested User not found")
         }
 
-
-        const existingConnection = await ConnectionUser.findOne({
-            $or: [
-                {fromUserId, toUserId},
-                {fromUserId: toUserId, toUserId: fromUserId}
-            ]
-        })
+        const existingConnection = await ConnectionUser.findOne(
+            {
+                $or: [{fromUserId, toUserId},{fromUserId: toUserId, toUserId: fromUserId}]
+            }
+        )
         if(existingConnection) {
             throw new Error("Request already made")
         }

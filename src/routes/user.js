@@ -5,7 +5,7 @@ const authUser = require("../middlewares/userAuth");
 const { set } = require("mongoose");
 
 const userRouter = express.Router();
-const USER_SAFE_DATA = ["firstName", "lastName", "skills", "photoUrl"];
+const USER_SAFE_DATA = ["firstName", "lastName", "skills", "photoUrl", "about", "age", "gender"];
 
 userRouter.get("/requests", authUser, async(req, res) => {
     const loggedUser = req.user;
@@ -16,7 +16,7 @@ userRouter.get("/requests", authUser, async(req, res) => {
                 toUserId: loggedUser._id,
                 status: "interested"
             }
-        ).populate("fromUserId", ["firstName", "lastName"]);
+        ).populate("fromUserId", ["firstName", "lastName", "photoUrl", "age", "gender", "skills"]);
 
         res.json(connectionRequests)
 
@@ -62,12 +62,11 @@ userRouter.get("/feed", authUser, async(req, res) => {
 
         const oldRelations = await ConnectionUser.find({
             $or:[
-                {toUserId: loggedUser._id, status: {$ne: 'interested'}},
+                {toUserId: loggedUser._id},
                 {fromUserId: loggedUser._id}
             ]
         }).select("fromUserId toUserId")
 
-        console.log(oldRelations);
         
 
         

@@ -9,11 +9,14 @@ const profileRouter = express.Router();
 profileRouter.get("/view", authUser, (req, res) => {
     try {
         const user = {
-            name: req.user.firstName + " " + req.user.lastName,
+            firstName: req.user.firstName,
+            lastName: req.user.lastName,
             emailId: req.user.emailId,
             gender: req.user.gender,
             skills: req.user.skills,
-            photoUrl: req.user.photoUrl
+            photoUrl: req.user.photoUrl,
+            age: req.user.age,
+            about: req.user.about,
         }
         res.send(user)
     }
@@ -26,10 +29,11 @@ profileRouter.get("/view", authUser, (req, res) => {
 //update logged user
 profileRouter.patch("/edit", authUser, async(req, res) => {
     const data = req.body;
+    console.log(data)
 
     try {
 
-        const updatedKeys = ['gender', 'photoUrl', 'skills'];
+        const updatedKeys = ['gender', 'photoUrl', 'skills', 'about', 'age'];
 
         const isValidUpdation =  Object.keys(data).every((val) => 
             updatedKeys.includes(val)
@@ -40,12 +44,14 @@ profileRouter.patch("/edit", authUser, async(req, res) => {
         }
 
         const userId = req.user._id;
+        if(data.photoUrl === "")
+            data.photoUrl = "https://geographyandyou.com/images/user-profile.png";
 
-        const user = await User.findByIdAndUpdate(userId, data, {
+        const user = await User.findByIdAndUpdate(userId, data, {new: true,
             runValidators: true
         })
         if(user) {
-            res.send('User updated successfully.')
+            res.send({data: user, message: 'User updated successfully.'})
         }
         else{
             res.send('User not found.')

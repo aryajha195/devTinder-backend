@@ -4,9 +4,10 @@ const User = require('../models/user');
 const authUser = async (req, res, next) => {
     try {
         const { token } = req.cookies;
-        if (!token)
-            throw new Error("token not found")
-
+        if (!token){
+            res.status(401).send("Please log in");
+            return;
+        }
         const decodedId = await jwt.verify(token, "dev@Tinder790")
 
         const { _id } = decodedId;
