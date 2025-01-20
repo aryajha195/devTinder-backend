@@ -6,38 +6,53 @@ const User = require("../models/user");
 const authRouter = express.Router();
 
 //login user
-authRouter.post("/login", async(req, res) => {
+authRouter.post("/login", async (req, res) => {
     const { emailId, password } = req.body;
     try {
         //check credentials are of valid format
         validateLoginCredentials(emailId, password);
 
         //get user form db 
-        const user = await User.findOne({emailId: emailId});
+        let user = await User.findOne({ emailId: emailId });
 
-        if(!user) {
+        if (!user) {
             throw new Error('Invalid Credentials.')
         }
 
         //check password
         const isValidPassword = await user.comparePassword(password);
-        
-        if(!isValidPassword) {
+
+        if (!isValidPassword) {
             throw new Error('Invalid Credentials.')
         }
 
+        if (user?.birthday) {
+            const dob = new Date(user?.birthday ? user?.birthday : '')
+            if (dob) {
+                // console.log(dob)
+                const yyyy = dob.getFullYear();
+                const mm = String(dob.getMonth() + 1).padStart(2, "0"); // Months are 0-based
+                const dd = String(dob.getDate()).padStart(2, "0");
+                // Format the date as YYYY-MM-DD
+                const formattedDate = `${yyyy}-${mm}-${dd}`
+                user.birthday = formattedDate
+                console.log(user.birthday)
+
+            }
+        }
+        // console.log(user)
         //get Token and send to response
         const token = await user.generateToken()
         res.cookie("token", token)
-        
+
         res.send(user)
     }
-    catch(error) {
+    catch (error) {
         res.clearCookie("token")
-        res.status(400).send("Error: "+error.message)
+        res.status(400).send("Error: " + error.message)
     }
 
-    
+
 })
 
 //signup user
@@ -47,8 +62,7 @@ authRouter.post("/signup", async (req, res) => {
         //validate req.body
         validateSignUp(req.body);
 
-        const { firstName, lastName, emailId, password, skills, photoUrl, gender } = req.body;
-
+        const { firstName, lastName, emailId, password, skills, photoUrl, gender, about, age, birthday } = req.body;
         //generate hashed password
         const passwordHash = await bcrypt.hash(password, 10);
 
@@ -60,26 +74,35 @@ authRouter.post("/signup", async (req, res) => {
             skills,
             photoUrl,
             gender,
+            about,
+            birthday,
+            age,
             password: passwordHash
         })
 
+
         await user.save();
-        res.send('User Added Successfully.')
+        const token = await user.generateToken()
+        res.cookie("token", token)
+        res.json({
+            'message': 'User Added Successfully',
+            'user': user
+        })
     }
-    catch(err) {
-        res.status(500).send('Error: '+err.message)
+    catch (err) {
+        res.status(500).send('Error: ' + err.message)
     }
-    
+
 })
 
 //logout user
 authRouter.post("/logout", (req, res) => {
-    try{
-    res.clearCookie("token")
-    res.send("Logged out successfuly")
+    try {
+        res.clearCookie("token")
+        res.send("Logged out successfuly")
     }
-    catch(err) {
-        res.status(400).send("Error: "+err.message)
+    catch (err) {
+        res.status(400).send("Error: " + err.message)
     }
 })
 

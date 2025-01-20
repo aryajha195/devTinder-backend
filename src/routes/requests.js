@@ -39,7 +39,7 @@ requestRouter.post("/send/:status/:toUserId", authUser, async (req, res) => {
 
         const connectedUser = await connection.save()
         if(status === 'interested'){
-             res.send( req.user.firstName+"    is interested in "+toUser.firstName)
+             res.send( req.user.firstName+" is interested in "+toUser.firstName)
         }
         else {
             res.send( req.user.firstName+" ignored "+toUser.firstName)

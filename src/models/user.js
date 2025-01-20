@@ -36,7 +36,7 @@ const userSchema = new mongoose.Schema({
     age: {
         type: Number,
         validate: (value) => {
-            if(value <= 10 && value >= 100) {
+            if(value < 18 && value > 100) {
                 throw new Error('Age must be a number.')
             }
         }
@@ -58,7 +58,17 @@ const userSchema = new mongoose.Schema({
     },
     photoUrl: {
         type: String,
-        default: "https://geographyandyou.com/images/user-profile.png"
+        // default: "https://geographyandyou.com/images/user-profile.png"
+    },
+    birthday: {
+        type: String,
+        validate: (value)=>{
+            if(!validator.isDate(value)){
+                throw new Error('Date is not valid');
+            } else if(value > new Date()){
+                throw new Error('Date cannot be future date');
+            }
+        }
     }
 },
 { timestamps: true }
