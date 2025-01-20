@@ -21,11 +21,9 @@ profileRouter.get("/view", authUser, (req, res) => {
             // birthday: formattedDate,
             about: req.user.about,
         }
-        // console.log(req.user?.birthday)
         if (req.user?.birthday) {
             const dob = new Date(req.user?.birthday ? req.user?.birthday : '')
             if (dob) {
-                // console.log(dob)
                 const yyyy = dob.getFullYear();
                 const mm = String(dob.getMonth() + 1).padStart(2, "0"); // Months are 0-based
                 const dd = String(dob.getDate()).padStart(2, "0");
@@ -45,7 +43,6 @@ profileRouter.get("/view", authUser, (req, res) => {
 //update logged user
 profileRouter.patch("/edit", authUser, async (req, res) => {
     const data = req.body;
-    // console.log(data)
 
     try {
 

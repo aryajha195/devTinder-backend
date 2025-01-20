@@ -29,18 +29,16 @@ authRouter.post("/login", async (req, res) => {
         if (user?.birthday) {
             const dob = new Date(user?.birthday ? user?.birthday : '')
             if (dob) {
-                // console.log(dob)
+                
                 const yyyy = dob.getFullYear();
                 const mm = String(dob.getMonth() + 1).padStart(2, "0"); // Months are 0-based
                 const dd = String(dob.getDate()).padStart(2, "0");
                 // Format the date as YYYY-MM-DD
                 const formattedDate = `${yyyy}-${mm}-${dd}`
                 user.birthday = formattedDate
-                console.log(user.birthday)
-
+                
             }
         }
-        // console.log(user)
         //get Token and send to response
         const token = await user.generateToken()
         res.cookie("token", token)
